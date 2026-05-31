@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85fca06edf66b4b45a90262da18341ba, type: 3}
+  m_Name: "6 \u0421\u0442\u0430\u043C\u0431\u0443\u043B\u0434\u0430\u043D \u049B\u0430\u0436\u044B\u043B\u0430\u0440 
+    \u041C\u043E\u0434\u0443\u043B\u044C 3"
+  m_EditorClassIdentifier: Assembly-CSharp::SubtitleSequenceSO
+  lines:
+  - firstLanguageText: "\u0418\u0437 \u0421\u0442\u0430\u043C\u0431\u0443\u043B\u0430
+      \u043F\u0430\u043B\u043E\u043C\u043D\u0438\u043A\u0438 \u0447\u0435\u0440\u0435\u0437
+      \u0421\u0440\u0435\u0434\u0438\u0437\u0435\u043C\u043D\u043E\u0435 \u043C\u043E\u0440\u0435
+      \u043D\u0430\u043F\u0440\u0430\u0432\u043B\u044F\u044E\u0442\u0441\u044F \u0432
+      \u0435\u0433\u0438\u043F\u0435\u0442\u0441\u043A\u0438\u0439 \u041F\u043E\u0440\u0442-\u0421\u0430\u0438\u0434."
+    secondLanguageText: From Istanbul, the pilgrims crossed the Mediterranean Sea
+      toward Port Said in Egypt.
+    duration: 5
+  - firstLanguageText: "\u041F\u0440\u043E\u0439\u0434\u044F \u0421\u0443\u044D\u0446\u043A\u0438\u0439
+      \u043A\u0430\u043D\u0430\u043B, \u043E\u043D\u0438 \u0435\u0449\u0451 \u0434\u0432\u0430
+      \u0434\u043D\u044F \u043F\u043B\u044B\u0432\u0443\u0442 \u043D\u0430 \u043F\u0430\u0440\u043E\u0445\u043E\u0434\u0435
+      \u0434\u043E \u0414\u0436\u0438\u0434\u0434\u044B."
+    secondLanguageText: Passing through the Suez Canal, they continued by steamship
+      for another two days until reaching Jeddah.
+    duration: 5
+  - firstLanguageText: "\u0421\u043E \u0432\u0442\u043E\u0440\u043E\u0439 \u043F\u043E\u043B\u043E\u0432\u0438\u043D\u044B
+      XIX \u0432\u0435\u043A\u0430 \u044D\u0442\u043E\u0442 \u043C\u0430\u0440\u0448\u0440\u0443\u0442
+      \u0441\u0442\u0430\u043B \u043E\u0434\u043D\u0438\u043C \u0438\u0437 \u0433\u043B\u0430\u0432\u043D\u044B\u0445
+      \u043F\u0443\u0442\u0435\u0439 \u0445\u0430\u0434\u0436\u0430."
+    secondLanguageText: From the second half of the nineteenth century onward, this
+      route became one of the principal roads of the Hajj.
+    duration: 8
+  - firstLanguageText: "\u0421\u043E\u0441\u0442\u043E\u044F\u043D\u0438\u0435 \u044D\u0442\u043E\u0433\u043E
+      \u0442\u044F\u0436\u0451\u043B\u043E\u0433\u043E, \u043D\u043E \u0438\u0441\u043F\u043E\u043B\u043D\u0435\u043D\u043D\u043E\u0433\u043E
+      \u0442\u0435\u0440\u043F\u0435\u043D\u0438\u044F"
+    secondLanguageText: Shakarim himself described the ordeal
+    duration: 3
+  - firstLanguageText: "\u0438 \u0432\u0435\u0440\u044B \u043F\u0443\u0442\u0435\u0448\u0435\u0441\u0442\u0432\u0438\u044F
+      \u0441\u0430\u043C \u0428\u0430\u043A\u0430\u0440\u0438\u043C \u043E\u043F\u0438\u0441\u044B\u0432\u0430\u043B
+      \u0442\u0430\u043A:"
+    secondLanguageText: ' of this difficult yet faith-filled journey:'
+    duration: 3
+  - firstLanguageText: "\xAB\u0421\u043E\u043B\u043D\u0446\u0435 \u0431\u0435\u0441\u043F\u043E\u0449\u0430\u0434\u043D\u043E
+      \u0436\u0433\u043B\u043E."
+    secondLanguageText: "\u201CThe sun burned mercilessly."
+    duration: 3
+  - firstLanguageText: "\u041D\u0435\u043F\u0440\u0438\u0432\u044B\u0447\u043D\u0430\u044F
+      \u043F\u0438\u0449\u0430 \u0443\u0441\u0438\u043B\u0438\u0432\u0430\u043B\u0430
+      \u0431\u043E\u043B\u0435\u0437\u043D\u044C."
+    secondLanguageText: Unfamiliar food worsened the illness.
+    duration: 3
+  - firstLanguageText: "\u041E\u0434\u0438\u043D \u0438\u0437 \u043F\u0430\u043B\u043E\u043C\u043D\u0438\u043A\u043E\u0432
+      \u0443\u043C\u0435\u0440 \u043F\u0440\u044F\u043C\u043E \u043D\u0430 \u0431\u043E\u0440\u0442\u0443
+      \u043A\u043E\u0440\u0430\u0431\u043B\u044F."
+    secondLanguageText: One of the pilgrims died aboard the ship.
+    duration: 4
+  - firstLanguageText: "\u041F\u043E \u043C\u043E\u0440\u0441\u043A\u043E\u043C\u0443
+      \u0437\u0430\u043A\u043E\u043D\u0443 \u0435\u0433\u043E \u043F\u0440\u0435\u0434\u0430\u043B\u0438
+      \u043C\u043E\u0440\u044E - \u0441\u0443\u0434\u044C\u0431\u0430,"
+    secondLanguageText: According to maritime law, he was buried at sea - a fate
+    duration: 4
+  - firstLanguageText: "\u043A\u043E\u0442\u043E\u0440\u043E\u0439 \u043C\u0443\u0441\u0443\u043B\u044C\u043C\u0430\u043D\u0438\u043D
+      \u043D\u0435 \u043F\u043E\u0436\u0435\u043B\u0430\u0435\u0442 \u043D\u0438\u043A\u043E\u043C\u0443\u2026\xBB"
+    secondLanguageText: "no Muslim would wish upon another\u2026"
+    duration: 4
