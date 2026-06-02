@@ -10,14 +10,9 @@ public class Module3MapPoint : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] private Module3MapController mapController;
     [SerializeField] private Button pointButton;
 
-    [Header("Hover Info")]
+    [Header("Info")]
     [SerializeField] private CanvasGroup infoGroup;
     [SerializeField] private float infoFadeDuration = 0.2f;
-
-    [Header("Full Image")]
-    [SerializeField] private CanvasGroup fullImageGroup;
-    [SerializeField] private float fullImageFadeDuration = 0.25f;
-    [SerializeField] private float delayBeforeFullImageShow = 0.2f;
     [SerializeField] private float delayAfterAudio = 0.3f;
 
     [Header("Audio + Subtitles")]
@@ -57,14 +52,6 @@ public class Module3MapPoint : MonoBehaviour, IPointerEnterHandler, IPointerExit
             infoGroup.blocksRaycasts = false;
         }
 
-        if (fullImageGroup != null)
-        {
-            fullImageGroup.alpha = 0f;
-            fullImageGroup.interactable = false;
-            fullImageGroup.blocksRaycasts = false;
-            fullImageGroup.gameObject.SetActive(false);
-        }
-
         if (transportGroup != null)
             transportGroup.alpha = 0f;
 
@@ -96,22 +83,11 @@ public class Module3MapPoint : MonoBehaviour, IPointerEnterHandler, IPointerExit
             pointButton.interactable = value;
         }
 
-        if (!value)
+        if (!value && infoGroup != null)
         {
-            if (infoGroup != null)
-            {
-                infoGroup.alpha = 0f;
-                infoGroup.interactable = false;
-                infoGroup.blocksRaycasts = false;
-            }
-
-            if (fullImageGroup != null)
-            {
-                fullImageGroup.alpha = 0f;
-                fullImageGroup.interactable = false;
-                fullImageGroup.blocksRaycasts = false;
-                fullImageGroup.gameObject.SetActive(false);
-            }
+            infoGroup.alpha = 0f;
+            infoGroup.interactable = false;
+            infoGroup.blocksRaycasts = false;
         }
     }
 
@@ -155,12 +131,15 @@ public class Module3MapPoint : MonoBehaviour, IPointerEnterHandler, IPointerExit
             infoRoutine = null;
         }
 
+        // Инфо-блок после клика должен остаться видимым
         if (infoGroup != null)
-            yield return FadeCanvasGroup(infoGroup, infoGroup.alpha, 0f, infoFadeDuration);
+        {
+            infoGroup.alpha = 1f;
+            infoGroup.interactable = false;
+            infoGroup.blocksRaycasts = false;
+        }
 
         yield return AnimateRouteAndTransportRoutine();
-
-        yield return new WaitForSeconds(delayBeforeFullImageShow);
 
         if (specialScenePoint)
         {
@@ -170,17 +149,6 @@ public class Module3MapPoint : MonoBehaviour, IPointerEnterHandler, IPointerExit
                 SceneManager.LoadScene(sceneToLoad);
 
             yield break;
-        }
-
-        if (fullImageGroup != null)
-        {
-            if (!fullImageGroup.gameObject.activeSelf)
-                fullImageGroup.gameObject.SetActive(true);
-
-            fullImageGroup.alpha = 0f;
-            yield return FadeCanvasGroup(fullImageGroup, 0f, 1f, fullImageFadeDuration);
-            fullImageGroup.interactable = true;
-            fullImageGroup.blocksRaycasts = true;
         }
 
         if (SubtitleManager.Instance != null && pointSubtitles != null)
@@ -194,21 +162,16 @@ public class Module3MapPoint : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         yield return new WaitForSeconds(delayAfterAudio);
 
-        if (fullImageGroup != null)
-        {
-            fullImageGroup.interactable = false;
-            fullImageGroup.blocksRaycasts = false;
-            yield return FadeCanvasGroup(fullImageGroup, fullImageGroup.alpha, 0f, fullImageFadeDuration);
-            fullImageGroup.gameObject.SetActive(false);
-        }
+        if (infoGroup != null)
+            yield return FadeCanvasGroup(infoGroup, infoGroup.alpha, 0f, infoFadeDuration);
 
         isBusy = false;
 
         if (mapController != null)
             mapController.NotifyPointFinished(this);
 
+        // Контроллеры возвращаем, но Move/Turn остаются заблокированы
         SceneFlowManager.Instance.SetXRLocked(false);
-
         SceneFlowManager.Instance.SetMoveTurnLocked(true);
     }
 

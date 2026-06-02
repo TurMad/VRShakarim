@@ -12,10 +12,13 @@ public class SubtitleSequenceSO : ScriptableObject
 public class SubtitleLineData
 {
     [TextArea(2, 6)]
-    public string firstLanguageText;
+    public string russianText;
 
     [TextArea(2, 6)]
-    public string secondLanguageText;
+    public string kazakhText;
+
+    [TextArea(2, 6)]
+    public string englishText;
 
     [Min(0.05f)]
     public float duration = 2f;

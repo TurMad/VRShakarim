@@ -6,12 +6,19 @@ public class SubtitleManager : MonoBehaviour
 {
     public static SubtitleManager Instance { get; private set; }
 
+    [Header("Regular Subtitles")]
     [SerializeField] private CanvasGroup subtitleCanvasGroup;
-    [SerializeField] private TMP_Text firstLanguageText;
-    [SerializeField] private TMP_Text secondLanguageText;
+    [SerializeField] private TMP_Text subtitleText;
+
+    [Header("Instruction Subtitles")]
+    [SerializeField] private CanvasGroup instructionCanvasGroup;
+    [SerializeField] private TMP_Text instructionText;
+
+    [Header("Common")]
     [SerializeField] private float fadeDuration = 0.25f;
 
     private Coroutine playRoutine;
+    private Coroutine instructionRoutine;
 
     private void Awake()
     {
@@ -30,7 +37,15 @@ public class SubtitleManager : MonoBehaviour
             subtitleCanvasGroup.blocksRaycasts = false;
         }
 
-        ClearTexts();
+        if (instructionCanvasGroup != null)
+        {
+            instructionCanvasGroup.alpha = 0f;
+            instructionCanvasGroup.interactable = false;
+            instructionCanvasGroup.blocksRaycasts = false;
+        }
+
+        ClearRegularText();
+        ClearInstructionText();
     }
 
     public void PlaySequence(SubtitleSequenceSO sequence)
@@ -49,7 +64,26 @@ public class SubtitleManager : MonoBehaviour
         if (playRoutine != null)
             StopCoroutine(playRoutine);
 
-        playRoutine = StartCoroutine(HideRoutine());
+        playRoutine = StartCoroutine(HideRegularRoutine());
+    }
+
+    public void ShowInstruction(InstructionSubtitleSO instruction)
+    {
+        if (instruction == null || instructionCanvasGroup == null)
+            return;
+
+        if (instructionRoutine != null)
+            StopCoroutine(instructionRoutine);
+
+        instructionRoutine = StartCoroutine(ShowInstructionRoutine(instruction));
+    }
+
+    public void HideInstruction()
+    {
+        if (instructionRoutine != null)
+            StopCoroutine(instructionRoutine);
+
+        instructionRoutine = StartCoroutine(HideInstructionRoutine());
     }
 
     private IEnumerator PlaySequenceRoutine(SubtitleSequenceSO sequence)
@@ -60,32 +94,74 @@ public class SubtitleManager : MonoBehaviour
         {
             SubtitleLineData line = sequence.lines[i];
 
-            if (firstLanguageText != null)
-                firstLanguageText.text = line.firstLanguageText;
-
-            if (secondLanguageText != null)
-                secondLanguageText.text = line.secondLanguageText;
+            if (subtitleText != null)
+                subtitleText.text = GetLocalizedText(line);
 
             yield return new WaitForSeconds(line.duration);
         }
 
-        yield return HideRoutine();
+        yield return HideRegularRoutine();
     }
 
-    private IEnumerator HideRoutine()
+    private IEnumerator HideRegularRoutine()
     {
         yield return FadeCanvasGroup(subtitleCanvasGroup, subtitleCanvasGroup.alpha, 0f, fadeDuration);
-        ClearTexts();
+        ClearRegularText();
         playRoutine = null;
     }
 
-    private void ClearTexts()
+    private IEnumerator ShowInstructionRoutine(InstructionSubtitleSO instruction)
     {
-        if (firstLanguageText != null)
-            firstLanguageText.text = string.Empty;
+        if (instructionText != null)
+            instructionText.text = GetLocalizedText(instruction);
 
-        if (secondLanguageText != null)
-            secondLanguageText.text = string.Empty;
+        yield return FadeCanvasGroup(instructionCanvasGroup, instructionCanvasGroup.alpha, 1f, fadeDuration);
+        instructionRoutine = null;
+    }
+
+    private IEnumerator HideInstructionRoutine()
+    {
+        yield return FadeCanvasGroup(instructionCanvasGroup, instructionCanvasGroup.alpha, 0f, fadeDuration);
+        ClearInstructionText();
+        instructionRoutine = null;
+    }
+
+    private string GetLocalizedText(SubtitleLineData line)
+    {
+        switch (SubtitleLanguageManager.CurrentLanguage)
+        {
+            case SubtitleLanguage.Kazakh:
+                return line.kazakhText;
+            case SubtitleLanguage.English:
+                return line.englishText;
+            default:
+                return line.russianText;
+        }
+    }
+
+    private string GetLocalizedText(InstructionSubtitleSO instruction)
+    {
+        switch (SubtitleLanguageManager.CurrentLanguage)
+        {
+            case SubtitleLanguage.Kazakh:
+                return instruction.kazakhText;
+            case SubtitleLanguage.English:
+                return instruction.englishText;
+            default:
+                return instruction.russianText;
+        }
+    }
+
+    private void ClearRegularText()
+    {
+        if (subtitleText != null)
+            subtitleText.text = string.Empty;
+    }
+
+    private void ClearInstructionText()
+    {
+        if (instructionText != null)
+            instructionText.text = string.Empty;
     }
 
     private IEnumerator FadeCanvasGroup(CanvasGroup group, float from, float to, float duration)
