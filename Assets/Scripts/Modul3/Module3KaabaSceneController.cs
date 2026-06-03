@@ -1,66 +1,59 @@
 using System.Collections;
+using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class Module3KaabaSceneController : MonoBehaviour
 {
+    [Header("XR")]
+    [SerializeField] private XROrigin xrOrigin;
+    [SerializeField] private Transform pathStartViewPoint;
+
     [Header("Audio 1")]
     [SerializeField] private AudioClip introAudio1;
     [SerializeField] private SubtitleSequenceSO introSubtitles1;
-    [SerializeField] private float delayBeforeAudio1 = 0.4f;
+    [SerializeField] private float delayBeforeAudio1 = 0.5f;
 
     [Header("Audio 2")]
     [SerializeField] private AudioClip introAudio2;
     [SerializeField] private SubtitleSequenceSO introSubtitles2;
-    [SerializeField] private float delayBetweenAudio1And2 = 0.5f;
+    [SerializeField] private float delayBetweenAudio1And2 = 0.6f;
 
-    [Header("Audio 3")]
-    [SerializeField] private AudioClip introAudio3;
-    [SerializeField] private SubtitleSequenceSO introSubtitles3;
-    [SerializeField] private float delayBetweenAudio2And3 = 0.5f;
-
-    [Header("After Intro")]
-    [SerializeField] private float delayBeforeEnableControllers = 0.5f;
-    [SerializeField] private InstructionSubtitleSO moveInstructionSubtitle;
+    [Header("Audio 3 After Teleport")]
+    [SerializeField] private AudioClip pathIntroAudio;
+    [SerializeField] private SubtitleSequenceSO pathIntroSubtitles;
+    [SerializeField] private float delayBeforePathIntroAudio = 0.6f;
 
     [Header("Fade")]
     [SerializeField] private float fadeFromBlackDuration = 1f;
-    [SerializeField] private float fadeToBlackDuration = 0.8f;
+    [SerializeField] private float fadeToPathDuration = 0.7f;
+    [SerializeField] private float fadeFromPathDuration = 0.7f;
+    [SerializeField] private float finalFadeDuration = 25f;
 
-    [Header("Forward Input")]
+    [Header("Path Movement")]
+    [SerializeField] private KaabaPathMovement playerPathMovement;
+    [SerializeField] private CameraSway cameraSway;
     [SerializeField] private InputActionReference[] forwardMoveActions;
     [SerializeField] private float forwardThreshold = 0.5f;
 
-    [Header("Pilgrims")]
-    [SerializeField] private Behaviour[] pilgrimMovementScriptsToEnable;
-    [SerializeField] private Animator[] pilgrimAnimators;
-    [SerializeField] private string walkTriggerName = "Walk";
+    [Header("After One Lap")]
+    [SerializeField] private InstructionSubtitleSO finalInstructionSubtitle;
+    [SerializeField] private InputActionReference[] finalStartActions;
+    [SerializeField] private AudioClip finalAudioWithoutSubtitles;
+    [SerializeField] private string introSceneName = "IntroScene";
 
-    [Header("Player Path")]
-    [SerializeField] private PathMovement playerPathFollower;
-
-    [Header("Camera Sway")]
-    [SerializeField] private CameraSway cameraSway;
-
-    [Header("Finish Logic")]
-    [SerializeField] private int requiredFullLaps = 7;
-    [SerializeField] private int transitionPointIndexOnNextLap = 2;
-    [SerializeField] private float delayBeforeFinishFade = 0.4f;
-    [SerializeField] private string introSceneName;
-
-    private bool waitingForForwardInput;
-    private bool movementStarted;
-    private bool finishStarted;
+    private bool pathInputEnabled;
+    private bool finalInstructionShown;
+    private bool finalStarted;
+    private bool lastMovingState;
 
     private void Awake()
     {
-        SetBehavioursEnabled(pilgrimMovementScriptsToEnable, false);
-
-        if (playerPathFollower != null)
+        if (playerPathMovement != null)
         {
-            playerPathFollower.SetAutoStart(false);
-            playerPathFollower.ResetPathState();
+            playerPathMovement.DisableMovement();
+            playerPathMovement.ResetPath();
         }
 
         if (cameraSway != null)
@@ -69,20 +62,14 @@ public class Module3KaabaSceneController : MonoBehaviour
 
     private void OnEnable()
     {
-        for (int i = 0; i < forwardMoveActions.Length; i++)
-        {
-            if (forwardMoveActions[i] != null)
-                forwardMoveActions[i].action.Enable();
-        }
+        EnableInputActions(forwardMoveActions, true);
+        EnableInputActions(finalStartActions, true);
     }
 
     private void OnDisable()
     {
-        for (int i = 0; i < forwardMoveActions.Length; i++)
-        {
-            if (forwardMoveActions[i] != null)
-                forwardMoveActions[i].action.Disable();
-        }
+        EnableInputActions(forwardMoveActions, false);
+        EnableInputActions(finalStartActions, false);
     }
 
     private IEnumerator Start()
@@ -98,85 +85,76 @@ public class Module3KaabaSceneController : MonoBehaviour
         yield return new WaitForSeconds(delayBetweenAudio1And2);
         yield return PlayAudioWithSubtitles(introAudio2, introSubtitles2);
 
-        yield return new WaitForSeconds(delayBetweenAudio2And3);
-        yield return PlayAudioWithSubtitles(introAudio3, introSubtitles3);
+        yield return SceneFlowManager.Instance.FadeToBlack(fadeToPathDuration);
 
-        yield return new WaitForSeconds(delayBeforeEnableControllers);
+        MoveXROriginToPoint();
 
-        // Возвращаем только визуал/контроллеры
+        yield return SceneFlowManager.Instance.FadeFromBlack(fadeFromPathDuration);
+
+        yield return new WaitForSeconds(delayBeforePathIntroAudio);
+        yield return PlayAudioWithSubtitles(pathIntroAudio, pathIntroSubtitles);
+
         SceneFlowManager.Instance.SetXRLocked(false);
-
-        // Move/Turn остаются заблокированы
         SceneFlowManager.Instance.SetMoveTurnLocked(true);
 
-        if (SubtitleManager.Instance != null && moveInstructionSubtitle != null)
-            SubtitleManager.Instance.ShowInstruction(moveInstructionSubtitle);
+        if (playerPathMovement != null)
+            playerPathMovement.EnableMovement();
 
-        waitingForForwardInput = true;
+        pathInputEnabled = true;
     }
 
     private void Update()
     {
-        if (waitingForForwardInput && !movementStarted)
-        {
-            for (int i = 0; i < forwardMoveActions.Length; i++)
-            {
-                if (forwardMoveActions[i] == null)
-                    continue;
+        if (!pathInputEnabled || finalStarted)
+            return;
 
-                Vector2 value = forwardMoveActions[i].action.ReadValue<Vector2>();
-                if (value.y > forwardThreshold)
-                {
-                    StartMovementSequence();
-                    break;
-                }
-            }
+        bool forwardPressed = IsForwardPressed();
+
+        if (playerPathMovement != null)
+            playerPathMovement.SetManualMoveInput(forwardPressed);
+
+        UpdateCameraSway();
+
+        if (!finalInstructionShown && playerPathMovement != null && playerPathMovement.CompletedLaps >= 1)
+        {
+            finalInstructionShown = true;
+
+            if (SubtitleManager.Instance != null && finalInstructionSubtitle != null)
+                SubtitleManager.Instance.ShowInstruction(finalInstructionSubtitle);
         }
 
-        if (movementStarted && !finishStarted && playerPathFollower != null)
+        if (finalInstructionShown && IsAnyFinalStartPressed())
         {
-            // Уже сделали 7 полных кругов и пошли на следующий круг, дошли до нужной точки
-            if (playerPathFollower.CompletedLaps >= requiredFullLaps &&
-                playerPathFollower.CurrentPointIndex >= transitionPointIndexOnNextLap)
-            {
-                StartCoroutine(FinishModuleRoutine());
-            }
+            StartCoroutine(FinalRoutine());
         }
     }
 
-    private void StartMovementSequence()
+    private IEnumerator FinalRoutine()
     {
-        movementStarted = true;
-        waitingForForwardInput = false;
+        finalStarted = true;
+        pathInputEnabled = false;
 
         if (SubtitleManager.Instance != null)
             SubtitleManager.Instance.HideInstruction();
 
-        SetBehavioursEnabled(pilgrimMovementScriptsToEnable, true);
-
-        for (int i = 0; i < pilgrimAnimators.Length; i++)
-        {
-            if (pilgrimAnimators[i] != null && !string.IsNullOrEmpty(walkTriggerName))
-                pilgrimAnimators[i].SetTrigger(walkTriggerName);
-        }
-
-        if (playerPathFollower != null)
-            playerPathFollower.PlayMove();
-
-        if (cameraSway != null)
-            cameraSway.enabled = true;
-    }
-
-    private IEnumerator FinishModuleRoutine()
-    {
-        finishStarted = true;
-
-        yield return new WaitForSeconds(delayBeforeFinishFade);
-
         SceneFlowManager.Instance.SetXRLocked(true);
         SceneFlowManager.Instance.SetMoveTurnLocked(true);
 
-        yield return SceneFlowManager.Instance.FadeToBlack(fadeToBlackDuration);
+        if (playerPathMovement != null)
+        {
+            playerPathMovement.SetManualMoveInput(false);
+            playerPathMovement.SetAutoMove(true);
+        }
+
+        if (cameraSway != null)
+            cameraSway.enabled = true;
+
+        if (finalAudioWithoutSubtitles != null)
+        {
+            SceneFlowManager.Instance.PlayAudio(finalAudioWithoutSubtitles);
+        }
+
+        yield return SceneFlowManager.Instance.FadeToBlack(finalFadeDuration);
 
         Module3MusicManager.StopMusic();
 
@@ -199,12 +177,80 @@ public class Module3KaabaSceneController : MonoBehaviour
             SubtitleManager.Instance.StopSequence();
     }
 
-    private void SetBehavioursEnabled(Behaviour[] behaviours, bool value)
+    private bool IsForwardPressed()
     {
-        for (int i = 0; i < behaviours.Length; i++)
+        for (int i = 0; i < forwardMoveActions.Length; i++)
         {
-            if (behaviours[i] != null)
-                behaviours[i].enabled = value;
+            if (forwardMoveActions[i] == null)
+                continue;
+
+            Vector2 value = forwardMoveActions[i].action.ReadValue<Vector2>();
+
+            if (value.y > forwardThreshold)
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool IsAnyFinalStartPressed()
+    {
+        for (int i = 0; i < finalStartActions.Length; i++)
+        {
+            if (finalStartActions[i] == null)
+                continue;
+
+            if (finalStartActions[i].action.WasPressedThisFrame())
+                return true;
+        }
+
+        return false;
+    }
+
+    private void UpdateCameraSway()
+    {
+        if (cameraSway == null || playerPathMovement == null)
+            return;
+
+        bool movingNow = playerPathMovement.IsMovingNow;
+
+        if (movingNow == lastMovingState)
+            return;
+
+        cameraSway.enabled = movingNow;
+        lastMovingState = movingNow;
+    }
+
+    private void MoveXROriginToPoint()
+    {
+        if (xrOrigin == null || pathStartViewPoint == null)
+            return;
+
+        Transform cameraTransform = xrOrigin.Camera.transform;
+
+        Vector3 cameraOffset = xrOrigin.transform.position - cameraTransform.position;
+        cameraOffset.y = 0f;
+
+        xrOrigin.transform.position = pathStartViewPoint.position + cameraOffset;
+
+        Vector3 forward = pathStartViewPoint.forward;
+        forward.y = 0f;
+
+        if (forward.sqrMagnitude > 0.001f)
+            xrOrigin.transform.rotation = Quaternion.LookRotation(forward);
+    }
+
+    private void EnableInputActions(InputActionReference[] actions, bool value)
+    {
+        for (int i = 0; i < actions.Length; i++)
+        {
+            if (actions[i] == null)
+                continue;
+
+            if (value)
+                actions[i].action.Enable();
+            else
+                actions[i].action.Disable();
         }
     }
 }

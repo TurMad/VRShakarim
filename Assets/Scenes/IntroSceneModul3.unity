@@ -300,6 +300,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SampleUI
       objectReference: {fileID: 0}
+    - target: {fileID: 6112366954248842158, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309155535717867841, guid: 673a848201f37c3468150815e21186b2, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5954,7 +5958,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Module3MusicSceneHook
   musicMode: 2
-  module3Music: {fileID: 8300000, guid: 7eab3b48021688a40be5bc95e2f4edf5, type: 3}
+  module3Music: {fileID: 8300000, guid: 183095ba25f1b544891e513809246283, type: 3}
 --- !u!4 &1450435111
 Transform:
   m_ObjectHideFlags: 0

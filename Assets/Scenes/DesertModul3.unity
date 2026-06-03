@@ -12119,11 +12119,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1437220725584065974, guid: eb0f847b262d2bd43943c262b3f24061, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.05
+      value: -0.11
       objectReference: {fileID: 0}
     - target: {fileID: 1437220725584065974, guid: eb0f847b262d2bd43943c262b3f24061, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.7
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 1437220725584065974, guid: eb0f847b262d2bd43943c262b3f24061, type: 3}
       propertyPath: m_LocalRotation.w
@@ -13367,7 +13367,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Module3MusicSceneHook
   musicMode: 1
-  module3Music: {fileID: 8300000, guid: 7eab3b48021688a40be5bc95e2f4edf5, type: 3}
+  module3Music: {fileID: 8300000, guid: 183095ba25f1b544891e513809246283, type: 3}
 --- !u!1001 &1009497848
 PrefabInstance:
   m_ObjectHideFlags: 0

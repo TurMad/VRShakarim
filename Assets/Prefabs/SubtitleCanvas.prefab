@@ -171,10 +171,10 @@ MonoBehaviour:
     \u0432 \u043D\u0430\u0443\u043A\u0435 \u0438 \u043F\u0440\u043E\u0441\u0432\u0435\u0449\u0435\u043D\u0438\u0438;
     \u043E\u043D \u043F\u043E\u043D\u0438\u043C\u0430\u043B \u044F\u0437\u044B\u043A
     \u043F\u0442\u0438\u0446 \u0438 \u0442\u0430\u0439\u043D\u044B\u0439 \u043F\u0443\u043B\u044C\u0441
-    \u0437\u0435\u043C\u043B\u0438."
+    \u0437\u0435\u043C\u043B\u0438. "
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b9265a7a2069c784f8f080bd45efdc84, type: 2}
-  m_sharedMaterial: {fileID: -3783972825141742786, guid: b9265a7a2069c784f8f080bd45efdc84, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f5f76ed2e35914e67890dce392ece015, type: 2}
+  m_sharedMaterial: {fileID: -5428352781574714612, guid: f5f76ed2e35914e67890dce392ece015, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -198,12 +198,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 33
+  m_fontSize: 28
   m_fontSizeBase: 33
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 33
+  m_fontSizeMax: 28
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
