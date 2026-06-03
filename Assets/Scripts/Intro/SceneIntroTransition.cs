@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -38,8 +39,12 @@ public class SceneIntroTransition : MonoBehaviour
     [SerializeField] private Behaviour[] starBehavioursToEnableAfterLanguage;
     [SerializeField] private InteractableHighlight[] starHighlightsToStartAfterLanguage;
 
+    [Header("Star Trigger Actions")]
+    [SerializeField] private InputActionReference[] starActivateActions;
+
     private bool isLoading;
     private bool languageSelected;
+    private bool starHovered;
     private Coroutine hintRoutine;
 
     private void Awake()
@@ -72,6 +77,9 @@ public class SceneIntroTransition : MonoBehaviour
         if (starInteractable != null)
         {
             starInteractable.selectEntered.AddListener(OnStarSelected);
+            starInteractable.activated.AddListener(OnStarActivated);
+            starInteractable.hoverEntered.AddListener(OnStarHoverEntered);
+            starInteractable.hoverExited.AddListener(OnStarHoverExited);
             starInteractable.enabled = false;
         }
 
@@ -82,10 +90,25 @@ public class SceneIntroTransition : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        SetInputActionsEnabled(starActivateActions, true);
+    }
+
+    private void OnDisable()
+    {
+        SetInputActionsEnabled(starActivateActions, false);
+    }
+
     private void OnDestroy()
     {
         if (starInteractable != null)
+        {
             starInteractable.selectEntered.RemoveListener(OnStarSelected);
+            starInteractable.activated.RemoveListener(OnStarActivated);
+            starInteractable.hoverEntered.RemoveListener(OnStarHoverEntered);
+            starInteractable.hoverExited.RemoveListener(OnStarHoverExited);
+        }
     }
 
     private IEnumerator Start()
@@ -102,6 +125,27 @@ public class SceneIntroTransition : MonoBehaviour
         }
 
         StartHintLoop();
+    }
+
+    private void Update()
+    {
+        if (!useStarSelectionAfterLanguage)
+            return;
+
+        if (!languageSelected || isLoading || !starHovered)
+            return;
+
+        for (int i = 0; i < starActivateActions.Length; i++)
+        {
+            if (starActivateActions[i] == null)
+                continue;
+
+            if (starActivateActions[i].action.WasPressedThisFrame())
+            {
+                TryLoadFromStar();
+                return;
+            }
+        }
     }
 
     private void SelectLanguage(SubtitleLanguage language)
@@ -156,6 +200,26 @@ public class SceneIntroTransition : MonoBehaviour
     }
 
     private void OnStarSelected(SelectEnterEventArgs args)
+    {
+        TryLoadFromStar();
+    }
+
+    private void OnStarActivated(ActivateEventArgs args)
+    {
+        TryLoadFromStar();
+    }
+
+    private void OnStarHoverEntered(HoverEnterEventArgs args)
+    {
+        starHovered = true;
+    }
+
+    private void OnStarHoverExited(HoverExitEventArgs args)
+    {
+        starHovered = false;
+    }
+
+    private void TryLoadFromStar()
     {
         if (!useStarSelectionAfterLanguage)
             return;
@@ -234,6 +298,20 @@ public class SceneIntroTransition : MonoBehaviour
 
         if (englishButton != null)
             englishButton.interactable = value;
+    }
+
+    private void SetInputActionsEnabled(InputActionReference[] actions, bool value)
+    {
+        for (int i = 0; i < actions.Length; i++)
+        {
+            if (actions[i] == null)
+                continue;
+
+            if (value)
+                actions[i].action.Enable();
+            else
+                actions[i].action.Disable();
+        }
     }
 
     private IEnumerator FadeVolume(float from, float to, float duration)

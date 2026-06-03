@@ -1,24 +1,29 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SubtitleManager : MonoBehaviour
 {
     public static SubtitleManager Instance { get; private set; }
 
-    [Header("Regular Subtitles")]
+    [Header("Subtitle UI")]
     [SerializeField] private CanvasGroup subtitleCanvasGroup;
+    [SerializeField] private GameObject subtitleTextRoot;
     [SerializeField] private TMP_Text subtitleText;
 
-    [Header("Instruction Subtitles")]
-    [SerializeField] private CanvasGroup instructionCanvasGroup;
-    [SerializeField] private TMP_Text instructionText;
+    [Header("Hide / Show Button")]
+    [SerializeField] private Button toggleTextButton;
+    [SerializeField] private Image toggleButtonImage;
+    [SerializeField] private Color activeButtonColor = Color.white;
+    [SerializeField] private Color inactiveButtonColor = new Color(0.55f, 0.55f, 0.55f, 1f);
 
     [Header("Common")]
     [SerializeField] private float fadeDuration = 0.25f;
 
-    private Coroutine playRoutine;
-    private Coroutine instructionRoutine;
+    private Coroutine currentRoutine;
+    private bool textVisible = true;
+    private bool subtitleActive;
 
     private void Awake()
     {
@@ -30,6 +35,9 @@ public class SubtitleManager : MonoBehaviour
 
         Instance = this;
 
+        if (toggleTextButton != null)
+            toggleTextButton.onClick.AddListener(ToggleTextVisibility);
+
         if (subtitleCanvasGroup != null)
         {
             subtitleCanvasGroup.alpha = 0f;
@@ -37,15 +45,15 @@ public class SubtitleManager : MonoBehaviour
             subtitleCanvasGroup.blocksRaycasts = false;
         }
 
-        if (instructionCanvasGroup != null)
-        {
-            instructionCanvasGroup.alpha = 0f;
-            instructionCanvasGroup.interactable = false;
-            instructionCanvasGroup.blocksRaycasts = false;
-        }
+        ClearText();
+        ApplyTextVisibility();
+        UpdateToggleButtonColor();
+    }
 
-        ClearRegularText();
-        ClearInstructionText();
+    private void OnDestroy()
+    {
+        if (toggleTextButton != null)
+            toggleTextButton.onClick.RemoveListener(ToggleTextVisibility);
     }
 
     public void PlaySequence(SubtitleSequenceSO sequence)
@@ -53,41 +61,36 @@ public class SubtitleManager : MonoBehaviour
         if (sequence == null || sequence.lines == null || sequence.lines.Count == 0)
             return;
 
-        if (playRoutine != null)
-            StopCoroutine(playRoutine);
-
-        playRoutine = StartCoroutine(PlaySequenceRoutine(sequence));
+        StopCurrentRoutine();
+        currentRoutine = StartCoroutine(PlaySequenceRoutine(sequence));
     }
 
     public void StopSequence()
     {
-        if (playRoutine != null)
-            StopCoroutine(playRoutine);
-
-        playRoutine = StartCoroutine(HideRegularRoutine());
+        StopCurrentRoutine();
+        currentRoutine = StartCoroutine(HideRoutine());
     }
 
     public void ShowInstruction(InstructionSubtitleSO instruction)
     {
-        if (instruction == null || instructionCanvasGroup == null)
+        if (instruction == null)
             return;
 
-        if (instructionRoutine != null)
-            StopCoroutine(instructionRoutine);
-
-        instructionRoutine = StartCoroutine(ShowInstructionRoutine(instruction));
+        StopCurrentRoutine();
+        currentRoutine = StartCoroutine(ShowInstructionRoutine(instruction));
     }
 
     public void HideInstruction()
     {
-        if (instructionRoutine != null)
-            StopCoroutine(instructionRoutine);
-
-        instructionRoutine = StartCoroutine(HideInstructionRoutine());
+        StopCurrentRoutine();
+        currentRoutine = StartCoroutine(HideRoutine());
     }
 
     private IEnumerator PlaySequenceRoutine(SubtitleSequenceSO sequence)
     {
+        subtitleActive = true;
+        ApplyTextVisibility();
+
         yield return FadeCanvasGroup(subtitleCanvasGroup, subtitleCanvasGroup.alpha, 1f, fadeDuration);
 
         for (int i = 0; i < sequence.lines.Count; i++)
@@ -100,30 +103,62 @@ public class SubtitleManager : MonoBehaviour
             yield return new WaitForSeconds(line.duration);
         }
 
-        yield return HideRegularRoutine();
-    }
-
-    private IEnumerator HideRegularRoutine()
-    {
-        yield return FadeCanvasGroup(subtitleCanvasGroup, subtitleCanvasGroup.alpha, 0f, fadeDuration);
-        ClearRegularText();
-        playRoutine = null;
+        yield return HideRoutine();
     }
 
     private IEnumerator ShowInstructionRoutine(InstructionSubtitleSO instruction)
     {
-        if (instructionText != null)
-            instructionText.text = GetLocalizedText(instruction);
+        subtitleActive = true;
 
-        yield return FadeCanvasGroup(instructionCanvasGroup, instructionCanvasGroup.alpha, 1f, fadeDuration);
-        instructionRoutine = null;
+        if (subtitleText != null)
+            subtitleText.text = GetLocalizedText(instruction);
+
+        ApplyTextVisibility();
+
+        yield return FadeCanvasGroup(subtitleCanvasGroup, subtitleCanvasGroup.alpha, 1f, fadeDuration);
+
+        currentRoutine = null;
     }
 
-    private IEnumerator HideInstructionRoutine()
+    private IEnumerator HideRoutine()
     {
-        yield return FadeCanvasGroup(instructionCanvasGroup, instructionCanvasGroup.alpha, 0f, fadeDuration);
-        ClearInstructionText();
-        instructionRoutine = null;
+        yield return FadeCanvasGroup(subtitleCanvasGroup, subtitleCanvasGroup.alpha, 0f, fadeDuration);
+
+        subtitleActive = false;
+        ClearText();
+        ApplyTextVisibility();
+
+        currentRoutine = null;
+    }
+
+    private void ToggleTextVisibility()
+    {
+        textVisible = !textVisible;
+        ApplyTextVisibility();
+        UpdateToggleButtonColor();
+    }
+
+    private void ApplyTextVisibility()
+    {
+        if (subtitleTextRoot != null)
+            subtitleTextRoot.SetActive(textVisible && subtitleActive);
+    }
+
+    private void UpdateToggleButtonColor()
+    {
+        if (toggleButtonImage == null)
+            return;
+
+        toggleButtonImage.color = textVisible ? activeButtonColor : inactiveButtonColor;
+    }
+
+    private void StopCurrentRoutine()
+    {
+        if (currentRoutine == null)
+            return;
+
+        StopCoroutine(currentRoutine);
+        currentRoutine = null;
     }
 
     private string GetLocalizedText(SubtitleLineData line)
@@ -132,8 +167,10 @@ public class SubtitleManager : MonoBehaviour
         {
             case SubtitleLanguage.Kazakh:
                 return line.kazakhText;
+
             case SubtitleLanguage.English:
                 return line.englishText;
+
             default:
                 return line.russianText;
         }
@@ -145,29 +182,28 @@ public class SubtitleManager : MonoBehaviour
         {
             case SubtitleLanguage.Kazakh:
                 return instruction.kazakhText;
+
             case SubtitleLanguage.English:
                 return instruction.englishText;
+
             default:
                 return instruction.russianText;
         }
     }
 
-    private void ClearRegularText()
+    private void ClearText()
     {
         if (subtitleText != null)
             subtitleText.text = string.Empty;
-    }
-
-    private void ClearInstructionText()
-    {
-        if (instructionText != null)
-            instructionText.text = string.Empty;
     }
 
     private IEnumerator FadeCanvasGroup(CanvasGroup group, float from, float to, float duration)
     {
         if (group == null)
             yield break;
+
+        group.interactable = to > 0f;
+        group.blocksRaycasts = to > 0f;
 
         float time = 0f;
         group.alpha = from;
@@ -181,5 +217,8 @@ public class SubtitleManager : MonoBehaviour
         }
 
         group.alpha = to;
+
+        group.interactable = to > 0f;
+        group.blocksRaycasts = to > 0f;
     }
 }
