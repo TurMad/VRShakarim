@@ -13956,10 +13956,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1876476964}
-  - component: {fileID: 1876476962}
   - component: {fileID: 1876476963}
   - component: {fileID: 1876476966}
   - component: {fileID: 1876476965}
+  - component: {fileID: 1876476962}
   m_Layer: 0
   m_Name: SceneManager
   m_TagString: Untagged
@@ -24371,7 +24371,6 @@ SceneRoots:
   - {fileID: 387448544}
   - {fileID: 1294532443}
   - {fileID: 5503632954693727689}
-  - {fileID: 1876476964}
   - {fileID: 1232009222}
   - {fileID: 730007875}
   - {fileID: 13665094}
@@ -24379,3 +24378,4 @@ SceneRoots:
   - {fileID: 1982332998}
   - {fileID: 962118326}
   - {fileID: 4472753785450810261}
+  - {fileID: 1876476964}
