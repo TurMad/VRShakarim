@@ -14531,8 +14531,8 @@ MonoBehaviour:
   introSubtitles: {fileID: 11400000, guid: 5f2e536aa699400438556eeeb9c7f9fc, type: 2}
   delayBeforeIntroAudio: 2
   delayBeforeExit: 2
-  fadeFromBlackDuration: 3
-  fadeToBlackDuration: 3
+  fadeFromBlackDuration: 2
+  fadeToBlackDuration: 2
   nextSceneName: KaabaMobul3
   playerPathFollower: {fileID: 1513409424}
   caravanMovers:

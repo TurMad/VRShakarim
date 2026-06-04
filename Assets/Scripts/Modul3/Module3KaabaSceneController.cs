@@ -34,8 +34,16 @@ public class Module3KaabaSceneController : MonoBehaviour
     [Header("Path Movement")]
     [SerializeField] private KaabaPathMovement playerPathMovement;
     [SerializeField] private CameraSway cameraSway;
+
+    [Header("Forward Move Input")]
     [SerializeField] private InputActionReference[] forwardMoveActions;
     [SerializeField] private float forwardThreshold = 0.5f;
+
+    [Header("Jump Point Input")]
+    [SerializeField] private InputActionReference[] jumpPointActions;
+
+    [Header("Walk Instruction")]
+    [SerializeField] private InstructionSubtitleSO walkInstructionSubtitle;
 
     [Header("After One Lap")]
     [SerializeField] private InstructionSubtitleSO finalInstructionSubtitle;
@@ -44,6 +52,7 @@ public class Module3KaabaSceneController : MonoBehaviour
     [SerializeField] private string introSceneName = "IntroScene";
 
     private bool pathInputEnabled;
+    private bool walkInstructionHidden;
     private bool finalInstructionShown;
     private bool finalStarted;
     private bool lastMovingState;
@@ -63,12 +72,14 @@ public class Module3KaabaSceneController : MonoBehaviour
     private void OnEnable()
     {
         EnableInputActions(forwardMoveActions, true);
+        EnableInputActions(jumpPointActions, true);
         EnableInputActions(finalStartActions, true);
     }
 
     private void OnDisable()
     {
         EnableInputActions(forwardMoveActions, false);
+        EnableInputActions(jumpPointActions, false);
         EnableInputActions(finalStartActions, false);
     }
 
@@ -100,6 +111,9 @@ public class Module3KaabaSceneController : MonoBehaviour
         if (playerPathMovement != null)
             playerPathMovement.EnableMovement();
 
+        if (SubtitleManager.Instance != null && walkInstructionSubtitle != null)
+            SubtitleManager.Instance.ShowInstruction(walkInstructionSubtitle);
+
         pathInputEnabled = true;
     }
 
@@ -112,6 +126,17 @@ public class Module3KaabaSceneController : MonoBehaviour
 
         if (playerPathMovement != null)
             playerPathMovement.SetManualMoveInput(forwardPressed);
+
+        if (forwardPressed)
+            HideWalkInstructionOnce();
+
+        if (IsJumpPressed())
+        {
+            HideWalkInstructionOnce();
+
+            if (playerPathMovement != null)
+                playerPathMovement.JumpToNextPoint();
+        }
 
         UpdateCameraSway();
 
@@ -150,9 +175,7 @@ public class Module3KaabaSceneController : MonoBehaviour
             cameraSway.enabled = true;
 
         if (finalAudioWithoutSubtitles != null)
-        {
             SceneFlowManager.Instance.PlayAudio(finalAudioWithoutSubtitles);
-        }
 
         yield return SceneFlowManager.Instance.FadeToBlack(finalFadeDuration);
 
@@ -160,6 +183,17 @@ public class Module3KaabaSceneController : MonoBehaviour
 
         if (!string.IsNullOrWhiteSpace(introSceneName))
             SceneManager.LoadScene(introSceneName);
+    }
+
+    private void HideWalkInstructionOnce()
+    {
+        if (walkInstructionHidden)
+            return;
+
+        walkInstructionHidden = true;
+
+        if (SubtitleManager.Instance != null && !finalInstructionShown)
+            SubtitleManager.Instance.HideInstruction();
     }
 
     private IEnumerator PlayAudioWithSubtitles(AudioClip clip, SubtitleSequenceSO subtitles)
@@ -187,6 +221,20 @@ public class Module3KaabaSceneController : MonoBehaviour
             Vector2 value = forwardMoveActions[i].action.ReadValue<Vector2>();
 
             if (value.y > forwardThreshold)
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool IsJumpPressed()
+    {
+        for (int i = 0; i < jumpPointActions.Length; i++)
+        {
+            if (jumpPointActions[i] == null)
+                continue;
+
+            if (jumpPointActions[i].action.WasPressedThisFrame())
                 return true;
         }
 
