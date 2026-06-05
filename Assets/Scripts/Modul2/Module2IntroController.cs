@@ -29,6 +29,7 @@ public class Module2IntroController : MonoBehaviour
     [Header("Instruction Audio")]
     [SerializeField] private AudioClip movementInstructionAudio;
     [SerializeField] private float delayBeforeInstructionAudio = 0.3f;
+    
 
     private IEnumerator Start()
     {

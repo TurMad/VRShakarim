@@ -1,8 +1,9 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-[RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable))]
+[RequireComponent(typeof(XRGrabInteractable))]
 public class Module2GrabItem : MonoBehaviour
 {
     [Header("Highlight")]
@@ -10,6 +11,7 @@ public class Module2GrabItem : MonoBehaviour
 
     [Header("Audio")]
     [SerializeField] private AudioClip interactionAudio;
+    [SerializeField] private SubtitleSequenceSO interactionSubtitles;
     [SerializeField] private bool playAudioOnGrab;
     [SerializeField] private bool playAudioOnlyOnce = true;
 
@@ -17,18 +19,23 @@ public class Module2GrabItem : MonoBehaviour
     [SerializeField] private bool returnOnRelease = true;
     [SerializeField] private float returnDuration = 0.35f;
 
-    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
+    private XRGrabInteractable grabInteractable;
 
     private Vector3 startPosition;
     private Quaternion startRotation;
 
     private bool wasInteracted;
     private bool audioPlayed;
+    private bool isGrabbed;
+    private bool audioIsPlaying;
+    private bool returnAfterAudio;
+
     private Coroutine returnRoutine;
+    private Coroutine audioRoutine;
 
     private void Awake()
     {
-        grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        grabInteractable = GetComponent<XRGrabInteractable>();
 
         if (highlight == null)
             highlight = GetComponent<InteractableHighlight>();
@@ -51,6 +58,9 @@ public class Module2GrabItem : MonoBehaviour
 
     private void OnGrabbed(SelectEnterEventArgs args)
     {
+        isGrabbed = true;
+        returnAfterAudio = false;
+
         SceneFlowManager.Instance.SetMoveTurnLocked(true);
 
         if (returnRoutine != null)
@@ -67,6 +77,27 @@ public class Module2GrabItem : MonoBehaviour
                 highlight.StopHighlight();
         }
 
+        TryPlayAudio();
+    }
+
+    private void OnReleased(SelectExitEventArgs args)
+    {
+        isGrabbed = false;
+
+        if (audioIsPlaying)
+        {
+            returnAfterAudio = true;
+            return;
+        }
+
+        SceneFlowManager.Instance.SetMoveTurnLocked(false);
+
+        if (returnOnRelease)
+            StartReturn();
+    }
+
+    private void TryPlayAudio()
+    {
         if (!playAudioOnGrab || interactionAudio == null)
             return;
 
@@ -74,19 +105,42 @@ public class Module2GrabItem : MonoBehaviour
             return;
 
         audioPlayed = true;
-        SceneFlowManager.Instance.PlayAudio(interactionAudio);
+
+        if (audioRoutine != null)
+            StopCoroutine(audioRoutine);
+
+        audioRoutine = StartCoroutine(AudioRoutine());
     }
 
-    private void OnReleased(SelectExitEventArgs args)
+    private IEnumerator AudioRoutine()
     {
-        SceneFlowManager.Instance.SetMoveTurnLocked(false);
+        audioIsPlaying = true;
 
-        if (returnOnRelease)
-            StartReturn();
+        if (SubtitleManager.Instance != null && interactionSubtitles != null)
+            SubtitleManager.Instance.PlaySequence(interactionSubtitles);
+
+        SceneFlowManager.Instance.PlayAudio(interactionAudio);
+        yield return SceneFlowManager.Instance.WaitForAudioFinished();
+
+        if (SubtitleManager.Instance != null && interactionSubtitles != null)
+            SubtitleManager.Instance.StopSequence();
+
+        audioIsPlaying = false;
+        audioRoutine = null;
+
+        if (!isGrabbed)
+        {
+            SceneFlowManager.Instance.SetMoveTurnLocked(false);
+
+            if (returnOnRelease && returnAfterAudio)
+                StartReturn();
+        }
     }
 
     private void StartReturn()
     {
+        returnAfterAudio = false;
+
         if (returnRoutine != null)
             StopCoroutine(returnRoutine);
 
@@ -103,7 +157,7 @@ public class Module2GrabItem : MonoBehaviour
         while (time < returnDuration)
         {
             time += Time.deltaTime;
-            float t = Mathf.Clamp01(time / returnDuration);
+            float t = returnDuration <= 0f ? 1f : Mathf.Clamp01(time / returnDuration);
 
             transform.position = Vector3.Lerp(fromPosition, startPosition, t);
             transform.rotation = Quaternion.Slerp(fromRotation, startRotation, t);

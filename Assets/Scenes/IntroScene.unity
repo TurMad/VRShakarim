@@ -331,7 +331,7 @@ MonoBehaviour:
   chooseLanguageHintClip: {fileID: 8300000, guid: eafefc40e7a9beb4da3f44588a33ccd8, type: 3}
   delayBeforeFirstHint: 1
   delayBetweenHints: 4
-  nextSceneName: Modul1
+  nextSceneName: Modul2
   delayBeforeCanvasShow: 1.5
   canvasFadeDuration: 0.35
   useStarSelectionAfterLanguage: 0

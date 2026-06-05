@@ -1,49 +1,61 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-[RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable))]
+[RequireComponent(typeof(XRGrabInteractable))]
 public class Module2BookInteractable : MonoBehaviour
 {
+    [Header("View")]
+    [SerializeField] private Transform viewPoint;
+    [SerializeField] private float moveToViewDuration = 0.35f;
+    [SerializeField] private float returnDuration = 0.35f;
+
     [Header("Highlight")]
     [SerializeField] private InteractableHighlight highlight;
 
     [Header("Instruction")]
     [SerializeField] private InstructionSubtitleSO bookInstructionSubtitle;
 
-    [Header("Pages")]
-    [SerializeField] private GameObject[] pageObjects;
-    [SerializeField] private int startPageIndex;
+    [Header("Pages UI")]
+    [SerializeField] private CanvasGroup pagesCanvasGroup;
+    [SerializeField] private Image leftPageImage;
+    [SerializeField] private Image rightPageImage;
+    [SerializeField] private Sprite[] pageSprites;
+    [SerializeField] private float pagesFadeDuration = 0.15f;
 
     [Header("Animator")]
     [SerializeField] private Animator bookAnimator;
-    [SerializeField] private string nextPageTriggerName = "NextPage";
-    [SerializeField] private string previousPageTriggerName = "PreviousPage";
+    [SerializeField] private string openTriggerName = "Open";
+    [SerializeField] private string closeTriggerName = "Close";
+    [SerializeField] private string nextPageTriggerName = "Next";
+    [SerializeField] private string previousPageTriggerName = "Previous";
+    [SerializeField] private float delayAfterOpenAnimation = 0.6f;
+    [SerializeField] private float pageAnimationDelay = 0.45f;
 
     [Header("Input")]
     [SerializeField] private InputActionReference rightTriggerNextPageAction;
     [SerializeField] private InputActionReference leftTriggerPreviousPageAction;
     [SerializeField] private InputActionReference xReturnAction;
 
-    [Header("Return")]
-    [SerializeField] private float returnDuration = 0.35f;
-
-    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
+    private XRGrabInteractable grabInteractable;
 
     private Vector3 startPosition;
     private Quaternion startRotation;
 
-    private int currentPageIndex;
-    private bool isGrabbed;
-    private bool wasInteracted;
+    private int currentLeftPageIndex;
+    private bool isBookActive;
+    private bool isChangingPage;
     private bool isReturning;
+    private bool wasInteracted;
 
-    private Coroutine returnRoutine;
+    private Coroutine moveRoutine;
 
     private void Awake()
     {
-        grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        grabInteractable = GetComponent<XRGrabInteractable>();
 
         if (highlight == null)
             highlight = GetComponent<InteractableHighlight>();
@@ -51,14 +63,15 @@ public class Module2BookInteractable : MonoBehaviour
         startPosition = transform.position;
         startRotation = transform.rotation;
 
-        currentPageIndex = Mathf.Clamp(startPageIndex, 0, Mathf.Max(0, pageObjects.Length - 1));
-        ApplyPage();
+        currentLeftPageIndex = 0;
+
+        HidePagesInstant();
+        ApplyPages();
     }
 
     private void OnEnable()
     {
         grabInteractable.selectEntered.AddListener(OnGrabbed);
-        grabInteractable.selectExited.AddListener(OnReleased);
 
         EnableAction(rightTriggerNextPageAction, true);
         EnableAction(leftTriggerPreviousPageAction, true);
@@ -68,7 +81,6 @@ public class Module2BookInteractable : MonoBehaviour
     private void OnDisable()
     {
         grabInteractable.selectEntered.RemoveListener(OnGrabbed);
-        grabInteractable.selectExited.RemoveListener(OnReleased);
 
         EnableAction(rightTriggerNextPageAction, false);
         EnableAction(leftTriggerPreviousPageAction, false);
@@ -77,7 +89,7 @@ public class Module2BookInteractable : MonoBehaviour
 
     private void Update()
     {
-        if (!isGrabbed || isReturning)
+        if (!isBookActive || isChangingPage || isReturning)
             return;
 
         if (rightTriggerNextPageAction != null && rightTriggerNextPageAction.action.WasPressedThisFrame())
@@ -87,19 +99,22 @@ public class Module2BookInteractable : MonoBehaviour
             PreviousPage();
 
         if (xReturnAction != null && xReturnAction.action.WasPressedThisFrame())
-            ReturnBookToStart();
+            CloseBook();
     }
 
     private void OnGrabbed(SelectEnterEventArgs args)
     {
-        isGrabbed = true;
-        SceneFlowManager.Instance.SetMoveTurnLocked(true);
+        if (isBookActive || isReturning)
+            return;
 
-        if (returnRoutine != null)
-        {
-            StopCoroutine(returnRoutine);
-            returnRoutine = null;
-        }
+        StartCoroutine(OpenBookRoutine());
+    }
+
+    private IEnumerator OpenBookRoutine()
+    {
+        isBookActive = true;
+
+        SceneFlowManager.Instance.SetMoveTurnLocked(true);
 
         if (!wasInteracted)
         {
@@ -109,98 +124,186 @@ public class Module2BookInteractable : MonoBehaviour
                 highlight.StopHighlight();
         }
 
+        grabInteractable.enabled = false;
+
+        currentLeftPageIndex = 0;
+        ApplyPages();
+        HidePagesInstant();
+
+        if (viewPoint != null)
+            yield return MoveToTargetRoutine(viewPoint.position, viewPoint.rotation, moveToViewDuration);
+
+        if (bookAnimator != null && !string.IsNullOrEmpty(openTriggerName))
+            bookAnimator.SetTrigger(openTriggerName);
+
+        yield return new WaitForSeconds(delayAfterOpenAnimation);
+
         if (SubtitleManager.Instance != null && bookInstructionSubtitle != null)
             SubtitleManager.Instance.ShowInstruction(bookInstructionSubtitle);
-    }
 
-    private void OnReleased(SelectExitEventArgs args)
-    {
-        isGrabbed = false;
-
-        if (!isReturning)
-            SceneFlowManager.Instance.SetMoveTurnLocked(false);
+        yield return FadePages(0f, 1f);
     }
 
     private void NextPage()
     {
-        if (currentPageIndex >= pageObjects.Length - 1)
+        if (currentLeftPageIndex + 2 >= pageSprites.Length)
             return;
 
-        currentPageIndex++;
-
-        if (bookAnimator != null && !string.IsNullOrEmpty(nextPageTriggerName))
-            bookAnimator.SetTrigger(nextPageTriggerName);
-
-        ApplyPage();
+        StartCoroutine(ChangePageRoutine(true));
     }
 
     private void PreviousPage()
     {
-        if (currentPageIndex <= 0)
+        if (currentLeftPageIndex - 2 < 0)
             return;
 
-        currentPageIndex--;
-
-        if (bookAnimator != null && !string.IsNullOrEmpty(previousPageTriggerName))
-            bookAnimator.SetTrigger(previousPageTriggerName);
-
-        ApplyPage();
+        StartCoroutine(ChangePageRoutine(false));
     }
 
-    private void ApplyPage()
+    private IEnumerator ChangePageRoutine(bool next)
     {
-        for (int i = 0; i < pageObjects.Length; i++)
+        isChangingPage = true;
+
+        yield return FadePages(pagesCanvasGroup != null ? pagesCanvasGroup.alpha : 1f, 0f);
+
+        if (bookAnimator != null)
         {
-            if (pageObjects[i] != null)
-                pageObjects[i].SetActive(i == currentPageIndex);
+            string triggerName = next ? nextPageTriggerName : previousPageTriggerName;
+
+            if (!string.IsNullOrEmpty(triggerName))
+                bookAnimator.SetTrigger(triggerName);
         }
+
+        yield return new WaitForSeconds(pageAnimationDelay);
+
+        if (next)
+            currentLeftPageIndex += 2;
+        else
+            currentLeftPageIndex -= 2;
+
+        ApplyPages();
+
+        yield return FadePages(0f, 1f);
+
+        isChangingPage = false;
     }
 
-    private void ReturnBookToStart()
+    private void CloseBook()
+    {
+        if (isReturning)
+            return;
+
+        StartCoroutine(CloseBookRoutine());
+    }
+
+    private IEnumerator CloseBookRoutine()
     {
         isReturning = true;
-        isGrabbed = false;
+        isBookActive = false;
 
         if (SubtitleManager.Instance != null)
             SubtitleManager.Instance.HideInstruction();
 
+        yield return FadePages(pagesCanvasGroup != null ? pagesCanvasGroup.alpha : 1f, 0f);
+
+        if (bookAnimator != null && !string.IsNullOrEmpty(closeTriggerName))
+            bookAnimator.SetTrigger(closeTriggerName);
+
+        yield return MoveToTargetRoutine(startPosition, startRotation, returnDuration);
+
+        transform.position = startPosition;
+        transform.rotation = startRotation;
+
+        grabInteractable.enabled = true;
+
         SceneFlowManager.Instance.SetMoveTurnLocked(false);
 
-        if (grabInteractable != null)
-            grabInteractable.enabled = false;
-
-        if (returnRoutine != null)
-            StopCoroutine(returnRoutine);
-
-        returnRoutine = StartCoroutine(ReturnToStartRoutine());
+        isReturning = false;
     }
 
-    private IEnumerator ReturnToStartRoutine()
+    private void ApplyPages()
     {
+        if (leftPageImage != null)
+        {
+            if (pageSprites != null && currentLeftPageIndex >= 0 && currentLeftPageIndex < pageSprites.Length)
+            {
+                leftPageImage.enabled = true;
+                leftPageImage.sprite = pageSprites[currentLeftPageIndex];
+            }
+            else
+            {
+                leftPageImage.enabled = false;
+            }
+        }
+
+        if (rightPageImage != null)
+        {
+            int rightIndex = currentLeftPageIndex + 1;
+
+            if (pageSprites != null && rightIndex >= 0 && rightIndex < pageSprites.Length)
+            {
+                rightPageImage.enabled = true;
+                rightPageImage.sprite = pageSprites[rightIndex];
+            }
+            else
+            {
+                rightPageImage.enabled = false;
+            }
+        }
+    }
+
+    private IEnumerator MoveToTargetRoutine(Vector3 targetPosition, Quaternion targetRotation, float duration)
+    {
+        if (moveRoutine != null)
+            StopCoroutine(moveRoutine);
+
         Vector3 fromPosition = transform.position;
         Quaternion fromRotation = transform.rotation;
 
         float time = 0f;
 
-        while (time < returnDuration)
+        while (time < duration)
         {
             time += Time.deltaTime;
-            float t = Mathf.Clamp01(time / returnDuration);
+            float t = duration <= 0f ? 1f : Mathf.Clamp01(time / duration);
 
-            transform.position = Vector3.Lerp(fromPosition, startPosition, t);
-            transform.rotation = Quaternion.Slerp(fromRotation, startRotation, t);
+            transform.position = Vector3.Lerp(fromPosition, targetPosition, t);
+            transform.rotation = Quaternion.Slerp(fromRotation, targetRotation, t);
 
             yield return null;
         }
 
-        transform.position = startPosition;
-        transform.rotation = startRotation;
+        transform.position = targetPosition;
+        transform.rotation = targetRotation;
+    }
 
-        isReturning = false;
-        returnRoutine = null;
+    private IEnumerator FadePages(float from, float to)
+    {
+        if (pagesCanvasGroup == null)
+            yield break;
 
-        if (grabInteractable != null)
-            grabInteractable.enabled = true;
+        float time = 0f;
+        pagesCanvasGroup.alpha = from;
+
+        while (time < pagesFadeDuration)
+        {
+            time += Time.deltaTime;
+            float t = pagesFadeDuration <= 0f ? 1f : Mathf.Clamp01(time / pagesFadeDuration);
+            pagesCanvasGroup.alpha = Mathf.Lerp(from, to, t);
+            yield return null;
+        }
+
+        pagesCanvasGroup.alpha = to;
+    }
+
+    private void HidePagesInstant()
+    {
+        if (pagesCanvasGroup == null)
+            return;
+
+        pagesCanvasGroup.alpha = 0f;
+        pagesCanvasGroup.interactable = false;
+        pagesCanvasGroup.blocksRaycasts = false;
     }
 
     private void EnableAction(InputActionReference actionReference, bool value)
