@@ -843,7 +843,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableHighlight
   targetRenderers: []
-  pulseColor: {r: 0.13536847, g: 0.735849, b: 0.735849, a: 0.31764707}
+  pulseColor: {r: 1, g: 0.68773913, b: 0, a: 1}
   minIntensity: 0
   maxIntensity: 0.3
   pulseSpeed: 0.7
@@ -865,6 +865,8 @@ MonoBehaviour:
   interactionAudio: {fileID: 0}
   playAudioOnGrab: 0
   playAudioOnlyOnce: 1
+  playAudioOnlyWhileGrabbed: 0
+  longGrabAudioSource: {fileID: 0}
   returnDuration: 0.35
   specialAudioParticles: {fileID: 0}
 --- !u!114 &351204470
@@ -6653,7 +6655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableHighlight
   targetRenderers: []
-  pulseColor: {r: 0.13536847, g: 0.735849, b: 0.735849, a: 0.31764707}
+  pulseColor: {r: 1, g: 0.68773913, b: 0, a: 1}
   minIntensity: 0
   maxIntensity: 0.3
   pulseSpeed: 0.7
@@ -6675,6 +6677,8 @@ MonoBehaviour:
   interactionAudio: {fileID: 8300000, guid: 9adb3059421ae4c49a6528b536967988, type: 3}
   playAudioOnGrab: 1
   playAudioOnlyOnce: 1
+  playAudioOnlyWhileGrabbed: 0
+  longGrabAudioSource: {fileID: 0}
   returnDuration: 0.35
   specialAudioParticles: {fileID: 0}
 --- !u!114 &574532997
@@ -7652,7 +7656,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: af0ca98252d35dc48af5d901d7f08ab4, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.075
+  m_Volume: 0.04
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -7980,7 +7984,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableHighlight
   targetRenderers: []
-  pulseColor: {r: 0.13536847, g: 0.735849, b: 0.735849, a: 0.31764707}
+  pulseColor: {r: 1, g: 0.68773913, b: 0, a: 1}
   minIntensity: 0
   maxIntensity: 0.3
   pulseSpeed: 0.7
@@ -8002,6 +8006,8 @@ MonoBehaviour:
   interactionAudio: {fileID: 0}
   playAudioOnGrab: 0
   playAudioOnlyOnce: 1
+  playAudioOnlyWhileGrabbed: 0
+  longGrabAudioSource: {fileID: 0}
   returnDuration: 0.35
   specialAudioParticles: {fileID: 0}
 --- !u!114 &1126587900
@@ -14143,9 +14149,8 @@ MonoBehaviour:
   fadeFromBlackDuration: 2
   finalAudioClip: {fileID: 8300000, guid: 583de4acf8f31a6419dbd8a682c3b4cd, type: 3}
   delayBeforeFinalAudio: 2
-  delayBeforeReturnToIntro: 2
-  introSceneName: IntroScene
-  fadeToIntroDuration: 2
+  delayAfterFinalAudio: 0.7
+  enableGrabItemsAfterFinal: 1
 --- !u!114 &1876476966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19486,7 +19491,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableHighlight
   targetRenderers: []
-  pulseColor: {r: 0.13536847, g: 0.735849, b: 0.735849, a: 0.31764707}
+  pulseColor: {r: 1, g: 0.68773913, b: 0, a: 1}
   minIntensity: 0
   maxIntensity: 0.3
   pulseSpeed: 0.7
@@ -19508,6 +19513,8 @@ MonoBehaviour:
   interactionAudio: {fileID: 0}
   playAudioOnGrab: 0
   playAudioOnlyOnce: 1
+  playAudioOnlyWhileGrabbed: 0
+  longGrabAudioSource: {fileID: 0}
   returnDuration: 0.35
   specialAudioParticles: {fileID: 0}
 --- !u!114 &2071197014
@@ -19918,7 +19925,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableHighlight
   targetRenderers: []
-  pulseColor: {r: 0.13536847, g: 0.735849, b: 0.735849, a: 0.31764707}
+  pulseColor: {r: 1, g: 0.68773913, b: 0, a: 1}
   minIntensity: 0
   maxIntensity: 0.3
   pulseSpeed: 0.7
@@ -19940,6 +19947,8 @@ MonoBehaviour:
   interactionAudio: {fileID: 0}
   playAudioOnGrab: 0
   playAudioOnlyOnce: 1
+  playAudioOnlyWhileGrabbed: 0
+  longGrabAudioSource: {fileID: 0}
   returnDuration: 0.35
   specialAudioParticles: {fileID: 0}
 --- !u!114 &2137825030
@@ -20349,6 +20358,8 @@ MonoBehaviour:
   interactionAudio: {fileID: 0}
   playAudioOnGrab: 0
   playAudioOnlyOnce: 1
+  playAudioOnlyWhileGrabbed: 0
+  longGrabAudioSource: {fileID: 0}
   returnDuration: 0.35
   specialAudioParticles: {fileID: 0}
 --- !u!23 &468609161359572755
@@ -22121,9 +22132,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableHighlight
   targetRenderers: []
-  pulseColor: {r: 0.13536847, g: 0.735849, b: 0.735849, a: 1}
+  pulseColor: {r: 1, g: 0.68773913, b: 0, a: 1}
   minIntensity: 0
-  maxIntensity: 1.29
+  maxIntensity: 2
   pulseSpeed: 0.7
   playOnEnable: 0
 --- !u!114 &3892000830021894240
@@ -22142,7 +22153,9 @@ MonoBehaviour:
   highlight: {fileID: 3892000830021894239}
   interactionAudio: {fileID: 8300000, guid: 0c832bfcfbc896d4f9d4c6f91b514424, type: 3}
   playAudioOnGrab: 1
-  playAudioOnlyOnce: 1
+  playAudioOnlyOnce: 0
+  playAudioOnlyWhileGrabbed: 1
+  longGrabAudioSource: {fileID: 0}
   returnDuration: 0.35
   specialAudioParticles: {fileID: 3892000830021894244}
 --- !u!114 &3892000830021894241
@@ -23294,9 +23307,9 @@ MonoBehaviour:
   - {fileID: 186414098523409874}
   - {fileID: 2510697635970176239}
   - {fileID: 3744174159047401496}
-  pulseColor: {r: 0.13536847, g: 0.735849, b: 0.735849, a: 0.31764707}
+  pulseColor: {r: 1, g: 0.68773913, b: 0, a: 1}
   minIntensity: 0
-  maxIntensity: 0.3
+  maxIntensity: 2
   pulseSpeed: 0.7
   playOnEnable: 0
 --- !u!114 &6705214331368055142
@@ -23316,6 +23329,8 @@ MonoBehaviour:
   interactionAudio: {fileID: 8300000, guid: 7e90f26db097b974096bd860b1b47830, type: 3}
   playAudioOnGrab: 1
   playAudioOnlyOnce: 1
+  playAudioOnlyWhileGrabbed: 0
+  longGrabAudioSource: {fileID: 0}
   returnDuration: 0.35
   specialAudioParticles: {fileID: 0}
 --- !u!114 &6705214331368055143
@@ -24139,7 +24154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableHighlight
   targetRenderers: []
-  pulseColor: {r: 0.13536847, g: 0.735849, b: 0.735849, a: 0.31764707}
+  pulseColor: {r: 1, g: 0.68773913, b: 0, a: 1}
   minIntensity: 0
   maxIntensity: 0.3
   pulseSpeed: 0.7

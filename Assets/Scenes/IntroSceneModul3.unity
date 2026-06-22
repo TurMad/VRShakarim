@@ -5769,7 +5769,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.065
+  m_Volume: 0.04
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -5911,7 +5911,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Module3MusicSceneHook
   musicMode: 2
-  module3Music: {fileID: 8300000, guid: 183095ba25f1b544891e513809246283, type: 3}
+  module3Music: {fileID: 8300000, guid: 7eab3b48021688a40be5bc95e2f4edf5, type: 3}
 --- !u!4 &1450435111
 Transform:
   m_ObjectHideFlags: 0

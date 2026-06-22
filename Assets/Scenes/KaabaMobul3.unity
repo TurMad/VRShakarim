@@ -27238,7 +27238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Module3MusicSceneHook
   musicMode: 1
-  module3Music: {fileID: 8300000, guid: 183095ba25f1b544891e513809246283, type: 3}
+  module3Music: {fileID: 8300000, guid: 7eab3b48021688a40be5bc95e2f4edf5, type: 3}
 --- !u!4 &1184812283
 Transform:
   m_ObjectHideFlags: 0

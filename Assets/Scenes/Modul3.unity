@@ -1991,7 +1991,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Module3MusicSceneHook
   musicMode: 0
-  module3Music: {fileID: 8300000, guid: 183095ba25f1b544891e513809246283, type: 3}
+  module3Music: {fileID: 8300000, guid: 7eab3b48021688a40be5bc95e2f4edf5, type: 3}
 --- !u!4 &1221181399
 Transform:
   m_ObjectHideFlags: 0
@@ -4071,7 +4071,7 @@ MonoBehaviour:
   - {fileID: 7999965086968220580}
   - {fileID: 2055416929390347731}
   - {fileID: 535888926462803932}
-  pulseColor: {r: 0, g: 1, b: 1, a: 1}
+  pulseColor: {r: 1, g: 0.8396617, b: 0, a: 1}
   minIntensity: 0
   maxIntensity: 2
   pulseSpeed: 0.5

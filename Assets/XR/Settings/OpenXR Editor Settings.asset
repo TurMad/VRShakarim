@@ -17,4 +17,4 @@ MonoBehaviour:
   - featureSets:
     - com.unity.openxr.featureset.android
   m_vulkanAdditionalGraphicsQueue: 0
-  m_vulkanOffscreenSwapchainNoMainDisplay: 1
+  m_vulkanOffscreenSwapchainNoMainDisplay: 0

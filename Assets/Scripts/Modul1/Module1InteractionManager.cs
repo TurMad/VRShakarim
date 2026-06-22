@@ -1,21 +1,19 @@
 using System.Collections;
 using Unity.XR.CoreUtils;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.XR.Interaction.Toolkit;
 
 public class Module1InteractionManager : MonoBehaviour
 {
     [Header("Items")]
     [SerializeField] private Module1GrabItem[] allItems;
 
-    [Header("Background Narration")]
+    [Header("Background Music / Narration")]
     [SerializeField] private AudioSource backgroundNarrationAudioSource;
 
     [Header("Subtitles")]
     [SerializeField] private SubtitleSequenceSO finalSubtitles;
 
-    [Header("Transition To Next View")]
+    [Header("Transition To Final View")]
     [SerializeField] private XROrigin xrOrigin;
     [SerializeField] private Transform nextViewPoint;
     [SerializeField] private float delayBeforeTransition = 1.2f;
@@ -25,16 +23,18 @@ public class Module1InteractionManager : MonoBehaviour
     [Header("Final Sequence")]
     [SerializeField] private AudioClip finalAudioClip;
     [SerializeField] private float delayBeforeFinalAudio = 0.7f;
-    [SerializeField] private float delayBeforeReturnToIntro = 1f;
-    [SerializeField] private string introSceneName = "Intro";
-    [SerializeField] private float fadeToIntroDuration = 0.5f;
-    
+    [SerializeField] private float delayAfterFinalAudio = 0.7f;
+    [SerializeField] private bool enableGrabItemsAfterFinal = true;
 
     private int interactedCount;
+
     private bool specialAudioPlaying;
     private bool transitionStarted;
     private bool pendingTransition;
+
     private bool resumeBackgroundAfterItemAudio;
+    private bool backgroundPausedByLongGrabAudio;
+
     private Coroutine waitTransitionRoutine;
 
     public bool HasAnyGrabbedItems()
@@ -124,6 +124,29 @@ public class Module1InteractionManager : MonoBehaviour
         resumeBackgroundAfterItemAudio = false;
     }
 
+    public void PauseBackgroundForLongGrabAudio()
+    {
+        if (backgroundNarrationAudioSource == null)
+            return;
+
+        if (backgroundNarrationAudioSource.isPlaying)
+        {
+            backgroundNarrationAudioSource.Pause();
+            backgroundPausedByLongGrabAudio = true;
+        }
+    }
+
+    public void ResumeBackgroundForLongGrabAudio()
+    {
+        if (!backgroundPausedByLongGrabAudio)
+            return;
+
+        if (backgroundNarrationAudioSource != null)
+            backgroundNarrationAudioSource.UnPause();
+
+        backgroundPausedByLongGrabAudio = false;
+    }
+
     private void TryStartPendingTransition()
     {
         if (!pendingTransition)
@@ -159,7 +182,7 @@ public class Module1InteractionManager : MonoBehaviour
         }
 
         waitTransitionRoutine = null;
-        yield return StartCoroutine(TransitionRoutine());
+        yield return TransitionRoutine();
     }
 
     private IEnumerator TransitionRoutine()
@@ -167,11 +190,12 @@ public class Module1InteractionManager : MonoBehaviour
         transitionStarted = true;
         pendingTransition = false;
 
-        if (backgroundNarrationAudioSource != null && backgroundNarrationAudioSource.isPlaying)
-            backgroundNarrationAudioSource.Stop();
+        // Background music НЕ стопаем.
+        // Он должен продолжать играть на финальной части.
 
         SceneFlowManager.Instance.SetMoveTurnLocked(true);
         SceneFlowManager.Instance.SetXRLocked(true);
+
         SetAllGrabInteractablesEnabled(false, null);
 
         yield return SceneFlowManager.Instance.FadeToBlack(fadeToBlackDuration);
@@ -194,12 +218,15 @@ public class Module1InteractionManager : MonoBehaviour
                 SubtitleManager.Instance.StopSequence();
         }
 
-        yield return new WaitForSeconds(delayBeforeReturnToIntro);
+        yield return new WaitForSeconds(delayAfterFinalAudio);
 
-        yield return SceneFlowManager.Instance.FadeToBlack(fadeToIntroDuration);
+        // Больше НЕ переходим обратно в Intro.
+        // Просто возвращаем управление, чтобы игрок мог смотреть помещение дальше.
+        SceneFlowManager.Instance.SetXRLocked(false);
+        SceneFlowManager.Instance.SetMoveTurnLocked(false);
 
-        if (!string.IsNullOrWhiteSpace(introSceneName))
-            SceneManager.LoadScene(introSceneName);
+        if (enableGrabItemsAfterFinal)
+            SetAllGrabInteractablesEnabled(true, null);
     }
 
     private void SetAllGrabInteractablesEnabled(bool value, Module1GrabItem exceptItem)

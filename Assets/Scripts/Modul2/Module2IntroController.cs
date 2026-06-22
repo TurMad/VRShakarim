@@ -1,12 +1,12 @@
 using System.Collections;
-using Unity.XR.CoreUtils;
 using UnityEngine;
 
 public class Module2IntroController : MonoBehaviour
 {
-    [Header("XR")]
-    [SerializeField] private XROrigin xrOrigin;
-    [SerializeField] private Transform gameplayViewPoint;
+    [Header("Character")]
+    [SerializeField] private GameObject characterRoot;
+    [SerializeField] private Animator characterAnimator;
+    [SerializeField] private string characterStartTriggerName = "start";
 
     [Header("Intro Audio Sequence")]
     [SerializeField] private AudioClip[] introVoiceClips = new AudioClip[9];
@@ -16,11 +16,8 @@ public class Module2IntroController : MonoBehaviour
 
     [Header("Fade")]
     [SerializeField] private float fadeFromBlackDuration = 1f;
-    [SerializeField] private int fadeAfterAudioIndex = 6;
-    [SerializeField] private float middleFadeToBlackDuration = 0.25f;
-    [SerializeField] private float middleFadeFromBlackDuration = 0.25f;
-    [SerializeField] private float finalFadeToBlackDuration = 0.35f;
-    [SerializeField] private float finalFadeFromBlackDuration = 0.35f;
+    [SerializeField] private float finalFadeToBlackDuration = 0.6f;
+    [SerializeField] private float finalFadeFromBlackDuration = 0.6f;
 
     [Header("After Intro")]
     [SerializeField] private Behaviour[] interactablesToEnable;
@@ -29,7 +26,11 @@ public class Module2IntroController : MonoBehaviour
     [Header("Instruction Audio")]
     [SerializeField] private AudioClip movementInstructionAudio;
     [SerializeField] private float delayBeforeInstructionAudio = 0.3f;
-    
+
+    [Header("Teleport Alternative")]
+    [SerializeField] private SimpleXRTeleportByButton teleportByButton;
+
+    private bool characterAnimationStarted;
 
     private IEnumerator Start()
     {
@@ -38,14 +39,19 @@ public class Module2IntroController : MonoBehaviour
 
         SetInteractablesEnabled(false);
 
+        if (teleportByButton != null)
+            teleportByButton.enabled = false;
+
         yield return SceneFlowManager.Instance.FadeFromBlack(fadeFromBlackDuration);
+
         yield return new WaitForSeconds(delayBeforeFirstAudio);
 
         yield return PlayIntroAudioSequence();
 
         yield return SceneFlowManager.Instance.FadeToBlack(finalFadeToBlackDuration);
 
-        MoveXROriginToPoint();
+        if (characterRoot != null)
+            characterRoot.SetActive(false);
 
         yield return SceneFlowManager.Instance.FadeFromBlack(finalFadeFromBlackDuration);
 
@@ -54,6 +60,9 @@ public class Module2IntroController : MonoBehaviour
 
         SceneFlowManager.Instance.SetXRLocked(false);
         SceneFlowManager.Instance.SetMoveTurnLocked(false);
+
+        if (teleportByButton != null)
+            teleportByButton.enabled = true;
 
         if (movementInstructionAudio != null)
             StartCoroutine(PlayInstructionAudioWithoutBlocking());
@@ -67,6 +76,12 @@ public class Module2IntroController : MonoBehaviour
 
             if (clip == null)
                 continue;
+
+            if (!characterAnimationStarted)
+            {
+                characterAnimationStarted = true;
+                PlayCharacterStartAnimation();
+            }
 
             SubtitleSequenceSO subtitle = null;
 
@@ -82,15 +97,20 @@ public class Module2IntroController : MonoBehaviour
             if (SubtitleManager.Instance != null)
                 SubtitleManager.Instance.StopSequence();
 
-            if (i == fadeAfterAudioIndex)
-            {
-                yield return SceneFlowManager.Instance.FadeToBlack(middleFadeToBlackDuration);
-                yield return SceneFlowManager.Instance.FadeFromBlack(middleFadeFromBlackDuration);
-            }
-
             if (i < introVoiceClips.Length - 1)
                 yield return new WaitForSeconds(delayBetweenAudios);
         }
+    }
+
+    private void PlayCharacterStartAnimation()
+    {
+        if (characterAnimator == null)
+            return;
+
+        if (string.IsNullOrWhiteSpace(characterStartTriggerName))
+            return;
+
+        characterAnimator.SetTrigger(characterStartTriggerName);
     }
 
     private IEnumerator PlayInstructionAudioWithoutBlocking()
@@ -115,24 +135,5 @@ public class Module2IntroController : MonoBehaviour
             if (highlightsToStart[i] != null)
                 highlightsToStart[i].StartHighlight();
         }
-    }
-
-    private void MoveXROriginToPoint()
-    {
-        if (xrOrigin == null || gameplayViewPoint == null)
-            return;
-
-        Transform cameraTransform = xrOrigin.Camera.transform;
-
-        Vector3 cameraOffset = xrOrigin.transform.position - cameraTransform.position;
-        cameraOffset.y = 0f;
-
-        xrOrigin.transform.position = gameplayViewPoint.position + cameraOffset;
-
-        Vector3 forward = gameplayViewPoint.forward;
-        forward.y = 0f;
-
-        if (forward.sqrMagnitude > 0.001f)
-            xrOrigin.transform.rotation = Quaternion.LookRotation(forward);
     }
 }
