@@ -280,9 +280,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2019373872266955283, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2019373872266955283, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2019373872266955283, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2019373872266955283, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4485548113814129438, guid: 673a848201f37c3468150815e21186b2, type: 3}
       propertyPath: m_Name
       value: SampleUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 6112366954248842158, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8309155535717867841, guid: 673a848201f37c3468150815e21186b2, type: 3}
       propertyPath: m_Pivot.x
@@ -314,7 +334,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8309155535717867841, guid: 673a848201f37c3468150815e21186b2, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 315.5716
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 8309155535717867841, guid: 673a848201f37c3468150815e21186b2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -362,6 +382,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8309155535717867841, guid: 673a848201f37c3468150815e21186b2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8810924859564265236, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8810924859564265236, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8810924859564265236, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8810924859564265236, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8857890392543181464, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8857890392543181464, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8857890392543181464, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8857890392543181464, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -805,6 +857,14 @@ PrefabInstance:
     - target: {fileID: 2337038421715714231, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: m_Name
       value: StarCore Green (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4789089552194040914, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4847369518443327053, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5670079761015196702, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: fadeVolume
@@ -5726,6 +5786,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: StarCore Green (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 4789089552194040914, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4847369518443327053, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5670079761015196702, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: fadeVolume
       value: 
@@ -6044,6 +6112,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: StarCore Green (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 4789089552194040914, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4847369518443327053, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5670079761015196702, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: fadeVolume
       value: 
@@ -6128,6 +6204,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: StarCore Green (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 4789089552194040914, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4847369518443327053, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5670079761015196702, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: fadeVolume
       value: 
@@ -6150,7 +6234,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1332681359056759131, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[2].m_Value
-      value: 500
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1332681359056759131, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[4].m_Value
@@ -6211,6 +6295,14 @@ PrefabInstance:
     - target: {fileID: 2337038421715714231, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: m_Name
       value: StarCore Green (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4789089552194040914, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4847369518443327053, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5670079761015196702, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: fadeVolume
@@ -6296,6 +6388,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: StarCore Green (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 4789089552194040914, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4847369518443327053, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5670079761015196702, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: fadeVolume
       value: 
@@ -6379,6 +6479,14 @@ PrefabInstance:
     - target: {fileID: 2337038421715714231, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: m_Name
       value: StarCore Green (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4789089552194040914, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4847369518443327053, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5670079761015196702, guid: dc94ed04da3716c4e900376e601adbeb, type: 3}
       propertyPath: fadeVolume
@@ -6589,7 +6697,7 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 2.9
+      - m_Value: 3.5
         m_Name: HaloBrightness
         m_Overridden: 1
       - m_Value: 1.12
@@ -6601,16 +6709,16 @@ VisualEffect:
       - m_Value: 5
         m_Name: PulsePeriod
         m_Overridden: 1
-      - m_Value: 0.48
+      - m_Value: 0.53
         m_Name: Trail Size
         m_Overridden: 1
-      - m_Value: 1.71
+      - m_Value: 1.56
         m_Name: Trail Life Time
         m_Overridden: 1
-      - m_Value: 6
+      - m_Value: 7.5
         m_Name: HaloSize
         m_Overridden: 1
-      - m_Value: 0.12
+      - m_Value: 0.55
         m_Name: Trail radius
         m_Overridden: 1
     m_Vector2f:

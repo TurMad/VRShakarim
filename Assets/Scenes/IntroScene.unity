@@ -5499,6 +5499,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SampleUI
       objectReference: {fileID: 0}
+    - target: {fileID: 6112366954248842158, guid: 673a848201f37c3468150815e21186b2, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8309155535717867841, guid: 673a848201f37c3468150815e21186b2, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5529,7 +5533,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8309155535717867841, guid: 673a848201f37c3468150815e21186b2, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 318
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 8309155535717867841, guid: 673a848201f37c3468150815e21186b2, type: 3}
       propertyPath: m_LocalPosition.x
