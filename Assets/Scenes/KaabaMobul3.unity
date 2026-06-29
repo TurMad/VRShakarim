@@ -34940,7 +34940,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Module3MusicSceneHook
   musicMode: 1
-  module3Music: {fileID: 8300000, guid: 7eab3b48021688a40be5bc95e2f4edf5, type: 3}
+  module3Music: {fileID: 8300000, guid: 7e07bcb9c9406754983434b43463685a, type: 3}
 --- !u!4 &1184812283
 Transform:
   m_ObjectHideFlags: 0
@@ -48656,7 +48656,7 @@ MonoBehaviour:
   introAudio2: {fileID: 8300000, guid: a60b70301b4923e439e96aa6cd0551ac, type: 3}
   introSubtitles2: {fileID: 11400000, guid: 5602e7994db72cb41a9a3087b78fe943, type: 2}
   delayBetweenAudio1And2: 1.5
-  pathIntroAudio: {fileID: 8300000, guid: fe40412e64460e045ba7159354514f11, type: 3}
+  pathIntroAudio: {fileID: 8300000, guid: e58197f78fec5e9459cf686897a0cd2c, type: 3}
   pathIntroSubtitles: {fileID: 11400000, guid: afe539d2bb2367f4b9a6f5cbf6c3ab80, type: 2}
   delayBeforePathIntroAudio: 0.5
   fadeFromBlackDuration: 3
@@ -48678,7 +48678,7 @@ MonoBehaviour:
   - {fileID: -5982496924579745919, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   - {fileID: 187161793506945269, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   - {fileID: 83097790271614945, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  finalAudioWithoutSubtitles: {fileID: 8300000, guid: 8218c8cd702ccbf4dae8fe08003c0269, type: 3}
+  finalAudioWithoutSubtitles: {fileID: 8300000, guid: e0965ab4d1c277b4a95fd760047ad65b, type: 3}
   introSceneName: IntroSceneModul3
 --- !u!4 &1637793137
 Transform:

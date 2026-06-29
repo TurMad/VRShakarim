@@ -16,6 +16,6 @@ MonoBehaviour:
   lines:
   - russianText: "\u0428\u04D9\u043A\u04D9\u0440\u0456\u043C:\r\n \u2013 \u0414\u0430,
       \u0430\u0493\u0430."
-    kazakhText: "\u0428\u04D9\u043A\u04D9\u0440\u0456\u043C: - \u0418\u04D9, \u0430\u0493\u0430."
-    englishText: "Shakarim:\r\n\u2014 Yes, aga."
+    kazakhText: 
+    englishText: "Shakarim:\r\n\u2014 Yes, uncle."
     duration: 1.5
